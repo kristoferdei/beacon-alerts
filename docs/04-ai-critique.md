@@ -236,9 +236,104 @@ the gap visible before the tests existed rather than after.
 
 > To be completed at the end.
 
+
 Reporting only the hits would make section 1 decorative. This section records predictions
 that turned out to be wrong, which is information about my own model of where AI output
 fails, and problems I did not anticipate at all, which is more useful still.
+
+## The predictions were mostly wrong, and in a specific direction
+
+Ten of twelve did not occur. The two that did fired partially and neither in the shape
+predicted.
+
+Every prediction in section 1 assumes the same failure mode: the agent produces something
+plausible and incorrect, and my job is to catch it. That happened twice, and neither time
+seriously. What happened repeatedly instead was the inverse. The agent implemented my
+specification faithfully, and my specification was wrong.
+
+Three instances, all caught before they reached anything:
+
+**The deduplication key.** DL-07 deduplicated on a single source id and called it stable. The
+USGS documentation says the opposite, and says so in the definition of the field itself. The
+agent read it, reported the conflict, and stopped rather than deciding. Had it not, the
+system would have alerted twice for one earthquake whenever a preferred network changed, and
+the duplicate would have been invisible in every test I had planned. Became DL-11.
+
+**The guard test that would have failed on correct output.** I specified that every attribute
+declared in a source definition must appear in the normalized output. Nullable fields are
+common in the USGS feed, so a correct normalizer would have failed this on any event where a
+declared field happened to be null. On first red I would have "fixed" a working normalizer.
+Corrected to at-least-one-across-the-fixture before it was written.
+
+**The missing positive cases.** `matching.test.ts` as I scoped it covered only non-matches.
+An implementation returning `false` unconditionally would have passed both tests. Caught by
+reading the inputs rather than the test names.
+
+## The pattern underneath all three
+
+I enumerated examples where I should have characterised the space they were drawn from.
+
+Each time I listed cases that felt representative, and each list had a hole in the middle
+that the enumeration itself concealed: it looked complete because every item in it was
+correct. The identity tests are the clearest instance. Five cases, all sound, and the alias
+sets in every one were either identical or one contained the other. Nothing covered two sets
+overlapping while each held an id the other did not, which is the only case the entry exists
+to handle. An implementation checking subset or equality would have passed all five.
+
+A fourth instance appeared later without my noticing: the DL-07 transition table names six
+rows and there is a seventh, prior record exists, did not match, still does not. The agent
+found it, flagged it in a comment, returned the obvious answer rather than inventing one, and
+I chose not to add the test for time. It is untested to this day and I would not have known
+it existed.
+
+The general form: writing "cover disjoint, containing, and partially overlapping" would have
+exposed the gap before the tests existed. Writing five good examples did not.
+
+## What the AI did better than predicted
+
+Worth recording, because a critique log that only accumulates failures is not an accurate
+account of what happened.
+
+- **It declined to use an undocumented field.** `title` is present in every live USGS payload
+  and absent from the documented per-feature properties. Hard rule 3 said not to read fields
+  it could not cite, so it constructed the title from two documented fields instead. That is
+  the rule working against a field that certainly exists, which is a harder call than
+  refusing one that does not.
+- **It caught a dependency mismatch I would not have.** `prisma@latest` was a release
+  candidate ahead of `@prisma/client@latest`. Installing both at `latest` would have paired an
+  RC CLI with a stable client. It pinned both instead.
+- **It stopped twice on a dependency and once on an architectural deviation**, each time with
+  evidence rather than a request. The `node:sqlite` proposal in particular was correctly
+  framed as needing sign-off rather than presented as a solution.
+- **It reported a third tool modifying the governance file.** `next dev` was appending to
+  `CLAUDE.md`. The agent noticed, reverted it, and configured it away. That was outside
+  anything I had asked it to watch.
+## Things I did not anticipate at all
+
+**That the tooling would consume real time.** Prisma 7 moved the connection URL into a config
+file, and the CLI could not read it while the runtime client could. The database was already
+deleted when this surfaced. Nothing about it was interesting, and it cost more of the budget
+than any correctness problem did. My planning treated setup as free.
+
+**That the agent would be a better reader of documentation than I was.** I wrote the rule
+requiring every external field to be cited to the provider's own documentation in order to
+catch invented field names. It caught zero invented field names. What it caught was the
+unstable identifier that invalidated my own deduplication design, and it caught it in the
+first ten minutes of implementation.
+
+**That a real feed produces cases fixtures never would.** The revision observed in a live
+cycle, an event updated and correctly not re-alerted, is a case I could not have produced on
+demand. It exists in `notes/` because it happened, not because it was arranged.
+
+## What I would do differently
+
+Write specifications as constraints over a space rather than as lists of examples. Every one
+of my errors was an enumeration that looked complete.
+
+Budget for setup explicitly. The plan's time estimates covered only the work.
+
+Treat the agent's uncertainty section as the highest-value part of its output. Every real
+finding in this log came from something it flagged rather than something it got wrong.
 
 ## 5. Scorecard
 
