@@ -12,3 +12,9 @@ Scratch observations captured during the build, written up properly at the end.
 - Active check skipped so far: mutation test on identity.ts intersection condition. The
   partial-overlap test exists and passes, but I have not confirmed it goes red when the
   condition is weakened.
+- Mutation check on alertability: broke the `priorRecord === null` branch
+  (`alert-new-match` -> `no-op`). Exactly one test went red, the one covering that row.
+  Tests are not coupled and the branch is genuinely covered. Restored, 19/19 green.
+- decideAlertability has a seventh transition DL-07 never names: prior record exists, did
+  not match, still does not. The agent flagged it in a comment and returned "no-op" rather
+  than inventing behaviour. Fourth instance of my enumerate-examples pattern.

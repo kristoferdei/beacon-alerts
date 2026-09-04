@@ -2,8 +2,6 @@
 // DL-07. Matching and alerting are separate questions: a rule can match the
 // same event on every poll forever, but should only ever alert on the
 // transition into a matching state.
-//
-// No implementation yet. Tests only.
 
 // The stored rule_matches row for this (rule, event) pair, if one exists yet.
 export type PriorMatchRecord = { matched: boolean } | null;
@@ -23,5 +21,21 @@ export function decideAlertability(
   currentlyMatches: boolean,
   priorRecord: PriorMatchRecord,
 ): AlertabilityAction {
-  throw new Error("not implemented");
+  if (eventStatus === "withdrawn") {
+    return "withdraw";
+  }
+
+  if (priorRecord === null) {
+    return currentlyMatches ? "alert-new-match" : "no-op";
+  }
+
+  if (priorRecord.matched) {
+    return currentlyMatches ? "already-alerted" : "record-no-alert";
+  }
+
+  // priorRecord.matched === false. The transition table has no row for
+  // "not matched, still not matching" (only "not matched -> now matches" is
+  // named); nothing to alert and nothing changed, so it's a no-op like the
+  // no-record case above.
+  return currentlyMatches ? "alert-revision-match" : "no-op";
 }
