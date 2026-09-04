@@ -24,9 +24,7 @@ Read in this order:
 | [`docs/04-ai-critique.md`](docs/04-ai-critique.md) | Failure predictions registered before generation, what was actually caught, and what I missed. Sections 4 and 5 are the honest accounting. |
 | [`prompts/prompt-log.md`](prompts/prompt-log.md) | Every prompt used, in order, with the outcome recorded: accepted, edited, or discarded. |
 | [`prompts/drafts/`](prompts/drafts/) | The prompts written in advance, each with the verification checklist I ran against its output. |
-
-`src/` is the implementation. `notes/` holds the agent's own reports, screenshots, and the
-end-to-end run output.
+| [`notes/`](notes/) | The agent's own reports, the design plan, screenshots, and the end-to-end run output. |
 
 Tooling: Claude Code v2.1.236, Sonnet 5 at default effort throughout. Held constant on
 purpose so the predictions in `docs/04-ai-critique.md` could be scored against one variable.
@@ -38,14 +36,14 @@ purpose so the predictions in `docs/04-ai-critique.md` could be scored against o
 Requires Node 24 (see `.nvmrc`).
 
 ```bash
-npm install                 # also runs `prisma generate` via postinstall
+npm install                 # postinstall runs prisma generate
 cp .env.example .env
-npm run setup                # migrate deploy, then seed (user, channel, two rules)
-npm run dev                  # http://localhost:3000
+npm run setup               # applies migrations and seeds a user, channel, and two rules
+npm run dev                 # http://localhost:3000
 ```
 
-At this point the database is seeded but has no events yet, and the admin view will say so.
-To populate it:
+At this point the database has rules but no events, and the admin view will say so. To fetch
+real data:
 
 ```bash
 npm run cycle               # fetch the live USGS feed, ingest, match, dispatch
@@ -57,7 +55,7 @@ in section 8 of the plan, and both outputs are recorded in `notes/e2e-run-1.txt`
 `notes/e2e-run-2.txt`.
 
 ```bash
-npm test                    # 31 tests
+npm test
 ```
 
 Admin view routes: `/admin`, `/admin/events`, `/admin/rules`, `/admin/deliveries`,
@@ -84,6 +82,13 @@ Measured against the definition of done in `docs/00-plan.md` section 8.
 - **A revision across a rule threshold produces one further delivery**, and a revision that
   does not cross one produces nothing. Covered by tests, and a real USGS revision was
   observed behaving correctly during a live cycle.
+- **The admin view answers the question it was scoped to.** From a delivery attempt you can
+  reach its rule and its event; from an event you can see which rules matched it, and "none"
+  where none did. That backwards walk is the point of the surface, per DL-08.
+- **The interface is a designed surface, not a default one.** The visual layer was planned
+  before it was built (`notes/design-plan.md`); the plan identified the two
+  generated-looking defaults in my own earlier version and replaced them with stated reasons;
+  every surface reflows to a stacked layout at 380px rather than scrolling sideways.
 - Every ambiguity in `docs/01-brief-analysis.md` maps to a decision log entry, and every
   prompt is logged with its outcome.
 
@@ -112,6 +117,9 @@ Stated plainly rather than left for you to find.
 - **The seventh transition is untested.** The DL-07 table names six rows and the
   implementation has a seventh (prior record exists, did not match, still does not). It
   returns the obvious answer and no test covers it.
+- **The failed-delivery state has not been seen against real data.** Every live delivery
+  succeeded through the logging transport, so the failed styling and the retry path are
+  covered by tests but were never exercised end to end.
 
 Everything considered and deliberately cut is in section 6 of the plan. That section has not
 been revised since the first commit.
@@ -120,17 +128,23 @@ been revised since the first commit.
 
 ## Timebox
 
-Budgeted four hours in the plan. First commit 11:14, last 16:54, so **five hours forty
-minutes elapsed**, with breaks in between; actual working time was closer to four and a half.
-Both numbers are here because the git log shows the first one.
+Budgeted four hours in the plan. First commit 11:14, last in the early evening, so roughly
+**six hours elapsed**, with breaks; actual working time was closer to five. Both numbers are
+here because the git log shows the first one.
 
-The overrun went to the admin view. I had provisionally cut it when the four-hour mark was
-approaching, then reversed that: it is the brief's fourth requirement and the plan's own
-ordering puts it in scope, so cutting it would have left a stated requirement unbuilt to
-protect a self-imposed number.
+Two things went beyond the budget, both deliberately.
+
+The **admin view** I had provisionally cut as the four-hour mark approached, then reversed:
+it is the brief's fourth requirement and the plan's own ordering puts it in scope, so cutting
+it would have left a stated requirement unbuilt to protect a self-imposed number.
+
+The **visual layer** was never in the plan at all. I added it because the role is a frontend
+position, and four unstyled tables demonstrate none of the judgement that job is about. It is
+scoped strictly to presentation: no query, route, data shape, or test changed.
 
 Where the time actually went, roughly: an hour on the documents before any code, two and a
 half on ingestion and identity (which absorbed the DL-11 rework), forty minutes on channels,
-forty on the admin view and landing page, and the rest on verification and write-up. The
-estimate that was most wrong was setup: a Prisma 7 configuration problem cost more of the
-budget than any correctness issue did, and the plan's estimates covered only the work.
+and the rest on the admin view, the visual layer, verification, and this write-up. The
+estimate that was most wrong was setup: a Prisma configuration problem and a native module
+compiled against the wrong Node version together cost more of the budget than any correctness
+issue did, and the plan's estimates covered only the work.
