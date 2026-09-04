@@ -19,12 +19,12 @@ Read in this order:
 |------|-----|
 | [`docs/00-plan.md`](docs/00-plan.md) | The plan of attack, written and committed before any code was generated. Deliverables, ordering, timebox, and the scope boundary. |
 | [`docs/01-brief-analysis.md`](docs/01-brief-analysis.md) | What the brief actually specifies, what it leaves open, and the questions I would have asked the PM. |
-| [`docs/02-architecture.md`](docs/02-architecture.md) | Canonical event model, rule matching, and the channel registry that makes the "add more channels later" requirement real. |
-| [`docs/03-decision-log.md`](docs/03-decision-log.md) | Every ambiguity in the brief closed by a named decision, with the option I rejected and the cost I accepted. DL-11 was forced by the source documentation contradicting my own design. |
+| [`docs/02-architecture.md`](docs/02-architecture.md) | Canonical event model, rule matching, and the channel registry that makes the "add more channels later" requirement real. Sections 2 and 8 are superseded by DL-11 and left as written; the header says why. |
+| [`docs/03-decision-log.md`](docs/03-decision-log.md) | Every gap in the brief closed by a named decision, with the option I rejected and the cost I accepted. DL-11 was forced by the source documentation contradicting my own design. |
 | [`docs/04-ai-critique.md`](docs/04-ai-critique.md) | Failure predictions registered before generation, what was actually caught, and what I missed. Sections 4 and 5 are the honest accounting. |
 | [`prompts/prompt-log.md`](prompts/prompt-log.md) | Every prompt used, in order, with the outcome recorded: accepted, edited, or discarded. |
-| [`prompts/drafts/`](prompts/drafts/) | The prompts written in advance, each with the verification checklist I ran against its output. |
-| [`notes/`](notes/) | The agent's own reports, the design plan, screenshots, and the end-to-end run output. |
+| [`prompts/drafts/`](prompts/drafts/) | The six prompts written in advance, each with the verification checklist I ran against its output. |
+| [`notes/`](notes/) | Agent reports, the design plan, screenshots, and the end-to-end run output. Indexed in `notes/README.md`. |
 
 Tooling: Claude Code v2.1.236, Sonnet 5 at default effort throughout. Held constant on
 purpose so the predictions in `docs/04-ai-critique.md` could be scored against one variable.
@@ -54,6 +54,8 @@ every event is already known and unchanged. That contrast is the deduplication r
 in section 8 of the plan, and both outputs are recorded in `notes/e2e-run-1.txt` and
 `notes/e2e-run-2.txt`.
 
+The suite is 35 tests, all unit-level, no network:
+
 ```bash
 npm test
 ```
@@ -66,6 +68,8 @@ system work end to end. Slack needs a webhook URL in the environment variable na
 channel config.
 
 ---
+
+![Admin view showing delivery attempts, each linking back to its rule and its event](notes/admin-deliveries.png)
 
 ## What works
 
@@ -89,8 +93,9 @@ Measured against the definition of done in `docs/00-plan.md` section 8.
   before it was built (`notes/design-plan.md`); the plan identified the two
   generated-looking defaults in my own earlier version and replaced them with stated reasons;
   every surface reflows to a stacked layout at 380px rather than scrolling sideways.
-- Every ambiguity in `docs/01-brief-analysis.md` maps to a decision log entry, and every
-  prompt is logged with its outcome.
+- **Every gap identified in `docs/01-brief-analysis.md` maps to a decision log entry**, and
+  two further decisions were forced during the build rather than derived from the brief.
+  Every prompt is logged with its outcome.
 
 ## What does not
 
@@ -128,11 +133,13 @@ been revised since the first commit.
 
 ## Timebox
 
-Budgeted four hours in the plan. First commit 11:14, last in the early evening, so roughly
-**six hours elapsed**, with breaks; actual working time was closer to five. Both numbers are
-here because the git log shows the first one.
+Budgeted four hours in the plan, and the work took about four and a half. The assignment
+allows interruptions, so elapsed time is not the measure: the first commit is at 11:14 and
+the last at 20:59, with substantial breaks in between. Both are here because the git log
+shows the second one and it would otherwise read as a nine-hour day.
 
-Two things went beyond the budget, both deliberately.
+The plan says that if I run over I stop and write up what is unfinished. I went half an hour
+over instead of stopping, on two decisions taken separately.
 
 The **admin view** I had provisionally cut as the four-hour mark approached, then reversed:
 it is the brief's fourth requirement and the plan's own ordering puts it in scope, so cutting
@@ -142,9 +149,10 @@ The **visual layer** was never in the plan at all. I added it because the role i
 position, and four unstyled tables demonstrate none of the judgement that job is about. It is
 scoped strictly to presentation: no query, route, data shape, or test changed.
 
-Where the time actually went, roughly: an hour on the documents before any code, two and a
-half on ingestion and identity (which absorbed the DL-11 rework), forty minutes on channels,
-and the rest on the admin view, the visual layer, verification, and this write-up. The
-estimate that was most wrong was setup: a Prisma configuration problem and a native module
-compiled against the wrong Node version together cost more of the budget than any correctness
-issue did, and the plan's estimates covered only the work.
+Where the time actually went, roughly: an hour on the documents before any code, two on
+ingestion and identity (which absorbed the DL-11 rework), forty minutes on channels, and the
+rest on the admin view, the visual layer, verification, and this write-up. The estimate that
+was most wrong was setup: a Prisma configuration problem, and a native module compiled
+against Node 22 after I upgraded to Node 24 mid-build, together cost more of the budget than
+any correctness issue did. The plan's estimates covered only the work, and the Node upgrade
+was my own unforced error.
