@@ -1,0 +1,15 @@
+
+> beacon-alerts@0.1.0 cycle
+> node scripts/run-cycle.ts
+
+USGS ingestion cycle — 2026-09-04T14:30:40.841Z
+  events fetched:     285
+  events new:         0
+  events revised:     0
+  events withdrawn:   0
+  events unchanged:   285
+  events merged:      0
+  rules evaluated:    0
+  rule matches:       0
+  alerts dispatched:  0
+  delivery attempts:  (none)

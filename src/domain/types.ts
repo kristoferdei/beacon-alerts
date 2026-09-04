@@ -29,3 +29,21 @@ export type CanonicalEvent = {
 // the envelope, because AttributeDefinition (section 3) already needs it and
 // the rule engine itself is not being built in this step.
 export type RuleOperator = ">" | ">=" | "<" | "<=" | "==" | "!=" | "contains";
+
+// AlertRule and RegionFilter, docs/02-architecture.md section 4. Needed now
+// to compose the full matches() formula in section 5.
+export type RegionFilter = { lat: number; lon: number; radiusKm: number };
+
+export type AlertRule = {
+  id: string;
+  userId: string;
+  name: string;
+  source: string;
+  eventType: string | null; // null = any type from this source
+  attribute: string;
+  operator: RuleOperator;
+  value: AttributeValue;
+  region: RegionFilter | null;
+  channelConfigId: string;
+  enabled: boolean;
+};

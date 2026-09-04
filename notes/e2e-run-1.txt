@@ -1,0 +1,123 @@
+
+> beacon-alerts@0.1.0 cycle
+> node scripts/run-cycle.ts
+
+USGS ingestion cycle — 2026-09-04T14:30:34.044Z
+  events fetched:     285
+  events new:         285
+  events revised:     0
+  events withdrawn:   0
+  events unchanged:   0
+  events merged:      0
+  rules evaluated:    570
+  rule matches:       108
+  alerts dispatched:  108
+  delivery attempts:
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 2.5 - 38 km N of Petersville, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 4.9 - south of the Fiji Islands
+    [sent] attempt 1: "Magnitude 4.5+ earthquakes" / M 4.9 - south of the Fiji Islands
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 3.4 - 4 km SSW of Pāhala, Hawaii
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 3.0 - 15 km NNE of Cantwell, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 2.5 - 79 km S of Kaktovik, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 5.4 - Kermadec Islands region
+    [sent] attempt 1: "Magnitude 4.5+ earthquakes" / M 5.4 - Kermadec Islands region
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 2.9 - 3 km SSE of Magas Arriba, Puerto Rico
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 3.7 - off the coast of Oregon
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 3.3 - 2 km SSW of Dibble, Oklahoma
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 4.3 - 116 km NE of Hengchun, Taiwan
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 4.7 - 2 km NNW of Cabangan, Philippines
+    [sent] attempt 1: "Magnitude 4.5+ earthquakes" / M 4.7 - 2 km NNW of Cabangan, Philippines
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 3.2 - 7 km ENE of Fajardo, Puerto Rico
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 4.5 - 36 km WSW of Ollagüe, Chile
+    [sent] attempt 1: "Magnitude 4.5+ earthquakes" / M 4.5 - 36 km WSW of Ollagüe, Chile
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 5.0 - South Sandwich Islands region
+    [sent] attempt 1: "Magnitude 4.5+ earthquakes" / M 5.0 - South Sandwich Islands region
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 5.2 - 28 km S of Cilacap, Indonesia
+    [sent] attempt 1: "Magnitude 4.5+ earthquakes" / M 5.2 - 28 km S of Cilacap, Indonesia
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 3.1 - 40 km NW of Toyah, Texas
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 4.1 - 101 km SSE of Sand Point, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 5.0 - 236 km ESE of Attu Station, Alaska
+    [sent] attempt 1: "Magnitude 4.5+ earthquakes" / M 5.0 - 236 km ESE of Attu Station, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 3.8 - 100 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 2.8 - 102 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 3.9 - 111 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 2.8 - 106 km S of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 3.5 - 107 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 3.2 - 113 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 2.9 - 107 km S of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 3.1 - 48 km NW of Nelson Lagoon, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 3.0 - 90 km S of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 2.9 - 102 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 2.8 - 100 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 3.4 - 57 km W of Anchor Point, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 3.0 - 103 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 2.5 - 57 km S of Whites City, New Mexico
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 3.4 - 98 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 3.5 - 87 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 3.4 - 19 km SE of Pāhala, Hawaii
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 2.6 - 149 km ESE of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 4.3 - 39 km ESE of Farkhār, Afghanistan
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 3.2 - 8 km WNW of Maricao, Puerto Rico
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 4.8 - 29 km WSW of Salamanca, Chile
+    [sent] attempt 1: "Magnitude 4.5+ earthquakes" / M 4.8 - 29 km WSW of Salamanca, Chile
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 3.0 - 28 km SSW of Charlotte Amalie, U.S. Virgin Islands
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 4.9 - 98 km W of Gorontalo, Indonesia
+    [sent] attempt 1: "Magnitude 4.5+ earthquakes" / M 4.9 - 98 km W of Gorontalo, Indonesia
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 4.8 - 57 km N of Ende, Indonesia
+    [sent] attempt 1: "Magnitude 4.5+ earthquakes" / M 4.8 - 57 km N of Ende, Indonesia
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 2.8 - 79 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 2.8 - 90 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 4.2 - 88 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 3.4 - 84 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 5.5 - 100 km S of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 4.5+ earthquakes" / M 5.5 - 100 km S of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 3.9 - 89 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 3.1 - 93 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 2.8 - 119 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 4.2 - 75 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 3.3 - 102 km S of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 2.8 - 106 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 3.3 - 106 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 2.7 - 89 km S of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 3.4 - 90 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 3.0 - 77 km S of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 3.4 - 64 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 2.6 - 12 km SW of Falls City, Texas
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 5.3 - 104 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 4.5+ earthquakes" / M 5.3 - 104 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 2.8 - 94 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 2.8 - 69 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 3.6 - 93 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 5.0 - Fiji region
+    [sent] attempt 1: "Magnitude 4.5+ earthquakes" / M 5.0 - Fiji region
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 2.6 - 94 km SSE of Akutan, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 2.7 - 89 km WNW of Lake Louise, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 2.5 - 17 km NE of Milford, Utah
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 2.8 - 90 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 3.2 - 95 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 4.1 - 231 km ESE of Attu Station, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 3.3 - 3 km ESE of Larkfield-Wikiup, CA
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 2.8 - 108 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 5.2 - 271 km SSE of Dunhuang, China
+    [sent] attempt 1: "Magnitude 4.5+ earthquakes" / M 5.2 - 271 km SSE of Dunhuang, China
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 4.5 - 11 km N of Jordán, Colombia
+    [sent] attempt 1: "Magnitude 4.5+ earthquakes" / M 4.5 - 11 km N of Jordán, Colombia
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 2.8 - 15 km SE of Petrolia, CA
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 3.1 - 93 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 3.2 - 106 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 2.9 - 94 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 2.6 - 71 km SSE of Sand Point, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 4.3 - 65 km SW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 3.6 - 106 km S of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 3.0 - 99 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 4.8 - 81 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 4.5+ earthquakes" / M 4.8 - 81 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 2.8 - 77 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 2.7 - 83 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 2.8 - 100 km S of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 4.5 - 78 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 4.5+ earthquakes" / M 4.5 - 78 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 2.8 - 77 km S of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 2.9 - 91 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 4.2 - 74 km SSW of Nikolski, Alaska
+    [sent] attempt 1: "Magnitude 2.5+ earthquakes" / M 2.8 - 100 km SSW of Nikolski, Alaska
