@@ -126,3 +126,40 @@ rename, tests only, so the diff is small enough to read completely.
 `["ci1","nc1"]`, which no containment check would satisfy.
 
 **Related.** C8
+
+### 5. Admin view
+**When.**
+**Intent.** The brief's fourth requirement, kept deliberately last, matching the "too" at the
+end of the brief and the ordering in the plan. Scoped read-only against the DL-08 question
+rather than as CRUD over every table, and asked for no UI or CSS framework: a well-set plain
+table says more in the time available than a half-configured component library. Full text and
+checklist in `prompts/drafts/05-admin-view.md`.
+
+**Prompt.**
+> Follow the instructions in prompts/drafts/05-admin-view.md, in the section titled "Prompt".
+> Ignore the section below it, that is my own checklist.
+
+**Outcome.** accepted
+
+**What I did with it.** Checked the diff touched no schema, ingestion, dispatcher or test
+code. Loaded it against a fresh database before running a cycle and again after, since the
+empty state is the one a reviewer sees first and the one that never gets tested. Screenshots
+of both in `notes/`.
+
+**Related.** DL-08, P12
+
+### 6. Replace the scaffold placeholder
+**When.** 
+**Intent.** The root page was still the Next.js scaffold default, which is the first thing a
+reviewer sees after clone and `npm run dev`, before any data exists. A landing page that
+explains what the project is and names the two commands that populate it turns a confusing
+first impression into an entry point. Small, but it is the state nobody tests.
+
+**Prompt.**
+> The root page at / is still the Next.js scaffold placeholder. Replace it with a minimal landing page: the project name, one sentence on what it is, a link to /admin, and the two commands to get data into it (npm run seed, npm run cycle). Same plain styling as the admin view, no new dependencies.
+  It should make sense to someone who just cloned the repo and ran npm run dev before running anything else.
+
+**Outcome.** accepted
+
+**What I did with it.** Checked it renders sensibly against an empty database, which is the
+state it exists for.
