@@ -7,7 +7,7 @@ That ordering is the point. A list of caught mistakes assembled afterwards prove
 noticed things; a list of predictions made in advance and then scored honestly, including the
 ones that did not happen and the ones I failed to anticipate, is testable.
 
-Sections 3 to 5 are filled in as the build proceeds.
+Sections 3 to 5 were filled in as the build proceeded.
 
 ---
 
@@ -19,12 +19,12 @@ outcome column can be filled in without hindsight doing the work.
 | # | Prediction | Why I expect it | How I will detect it |
 |---|---|---|---|
 | P1 | Ingestion omits deduplication, or dedups on an unstable key such as title or timestamp | Dedup is invisible in a single-run demo. The generated code will look correct and be wrong on the second poll. | Failing test written before implementation: same payload ingested twice yields one event and one delivery. |
-| P2 | Revised events are ignored entirely, or every revision re-alerts | The brief has no concept of revision, so nothing in the prompt suggests it unless I put it there. Handling it correctly requires the state table in DL-07, which is easy to flatten into "changed, therefore alert". | Test over the five transitions in DL-07, including a revision that crosses a threshold and one that does not. |
+| P2 | Revised events are ignored entirely, or every revision re-alerts | The brief has no concept of revision, so nothing in the prompt suggests it unless I put it there. Handling it correctly requires the state table in DL-07, which is easy to flatten into "changed, therefore alert". | Test over the transitions in DL-07, including a revision that crosses a threshold and one that does not. |
 | P3 | The channel abstraction is a switch on channel type rather than a registry | It satisfies the requirement visibly and is the shorter path. | Read the dispatcher. Then add the second adapter and check the dispatcher diff is empty. |
 | P4 | Channel secrets (Slack webhook URL, SMTP credentials) stored in the database | Config and secret arrive together in the same user flow, so they get modelled together. | Read the schema. Any secret-shaped column is rejected. |
 | P5 | Retry is unbounded, absent, or retries non-retryable failures | Retry is usually generated as a loop without a classification of what is worth retrying. | Read the dispatcher. Check that retryability comes from the adapter, per DL-04, and that attempts are bounded. |
 | P6 | Source definition and normalizer disagree on an attribute key | Two separate artifacts with no compiler-enforced link, generated at different times. Failure is silent: the form offers a rule that never matches. | The guard test in DL-03: every declared key must appear in normalizer output over a recorded real payload. |
-| P7 | The external feed's payload shape is partly invented | Highest-frequency hallucination class. Plausible field names are easy to produce. | Every field checked against the provider's own documentation, with the link recorded in section 3. Already partly done before the build, see DL-06. |
+| P7 | The external feed's payload shape is partly invented | Highest-frequency hallucination class. Plausible field names are easy to produce. | Every field checked against the provider's own documentation, with the link recorded in section 3. |
 | P8 | Suggested packages do not exist, or the version does not | Package names and versions are generated from pattern, not lookup. | Verify each on the registry before install. |
 | P9 | Generated tests assert on their own mocks | Produces a green suite that tests nothing, and is the most comfortable thing to accept. | Read every test for whether the assertion could fail if the implementation were deleted. Any test that mocks the unit under test is deleted, not repaired. |
 | P10 | A rule referencing an attribute the event lacks throws instead of not matching | Undefined attribute access is an edge case that only appears with heterogeneous sources. | Test: a news event against an earthquake rule yields a non-match and no error. |
@@ -71,7 +71,8 @@ sentence to them slightly rewritten, while presenting it as verbatim, is a bad l
 document whose entire argument is careful reading. The same fragment appeared twice more in
 the file; a grep confirmed all occurrences were fixed.
 
-**Action.** Corrected in both places. Third occurrence was elided with an ellipsis and left.
+**Action.** Corrected in both places. The third occurrence was elided with an ellipsis and
+left as it was.
 
 ### C2. Unverified word count in the same document
 
@@ -230,20 +231,37 @@ from: I enumerated examples, and the enumeration had a hole in the middle. Writi
 constraint first ("cover disjoint, containing, and partially overlapping") would have made
 the gap visible before the tests existed rather than after.
 
-<!-- Further entries appended during the build. -->
+### C9. The agent critiqued its own earlier output correctly
+
+**Setup.** The design prompt stated that the current admin view used two of the listed
+generated-design defaults, without saying which. A test of whether it could find them in its
+own prior work rather than only in code it had not written.
+
+**Result.** It found both: all-caps table headers, and monospace applied indiscriminately to
+five kinds of content. It then drew a distinction I had not: monospace is right for opaque
+identifiers, where fixed width separates 0 from O and makes two similar ids visually
+diffable, and wrong for a rule condition or a channel name, which are language rather than
+code. I kept its version over my own instruction.
+
+**Also.** It stopped before building, having noticed the landing page shared a CSS class with
+the admin view, so a dark theme would have carried over as an unasked side effect. Fourth
+time hard rule 7 produced a question instead of a decision.
+
+**What this does not prove.** That self-critique is reliable. It found the two defaults
+because I told it there were exactly two and gave it a list to check against. An open
+invitation to review its own work would be a different and weaker test.
+
+---
 
 ## 4. Predictions that did not happen, and things I missed
-
-> To be completed at the end.
-
 
 Reporting only the hits would make section 1 decorative. This section records predictions
 that turned out to be wrong, which is information about my own model of where AI output
 fails, and problems I did not anticipate at all, which is more useful still.
 
-## The predictions were mostly wrong, and in a specific direction
+### The predictions were mostly wrong, and in a specific direction
 
-Ten of twelve did not occur. The two that did fired partially and neither in the shape
+Ten of twelve did not occur. The two that did fired partially, and neither in the shape
 predicted.
 
 Every prediction in section 1 assumes the same failure mode: the agent produces something
@@ -269,7 +287,7 @@ Corrected to at-least-one-across-the-fixture before it was written.
 An implementation returning `false` unconditionally would have passed both tests. Caught by
 reading the inputs rather than the test names.
 
-## The pattern underneath all three
+### The pattern underneath all three
 
 I enumerated examples where I should have characterised the space they were drawn from.
 
@@ -283,13 +301,12 @@ to handle. An implementation checking subset or equality would have passed all f
 A fourth instance appeared later without my noticing: the DL-07 transition table names six
 rows and there is a seventh, prior record exists, did not match, still does not. The agent
 found it, flagged it in a comment, returned the obvious answer rather than inventing one, and
-I chose not to add the test for time. It is untested to this day and I would not have known
-it existed.
+I chose not to add the test for time. It is untested and I would not have known it existed.
 
 The general form: writing "cover disjoint, containing, and partially overlapping" would have
 exposed the gap before the tests existed. Writing five good examples did not.
 
-## What the AI did better than predicted
+### What the AI did better than predicted
 
 Worth recording, because a critique log that only accumulates failures is not an accurate
 account of what happened.
@@ -300,20 +317,23 @@ account of what happened.
   the rule working against a field that certainly exists, which is a harder call than
   refusing one that does not.
 - **It caught a dependency mismatch I would not have.** `prisma@latest` was a release
-  candidate ahead of `@prisma/client@latest`. Installing both at `latest` would have paired an
-  RC CLI with a stable client. It pinned both instead.
+  candidate ahead of `@prisma/client@latest`. Installing both at `latest` would have paired
+  an RC CLI with a stable client. It pinned both instead.
 - **It stopped twice on a dependency and once on an architectural deviation**, each time with
   evidence rather than a request. The `node:sqlite` proposal in particular was correctly
   framed as needing sign-off rather than presented as a solution.
 - **It reported a third tool modifying the governance file.** `next dev` was appending to
   `CLAUDE.md`. The agent noticed, reverted it, and configured it away. That was outside
   anything I had asked it to watch.
-## Things I did not anticipate at all
+
+### Things I did not anticipate at all
 
 **That the tooling would consume real time.** Prisma 7 moved the connection URL into a config
 file, and the CLI could not read it while the runtime client could. The database was already
-deleted when this surfaced. Nothing about it was interesting, and it cost more of the budget
-than any correctness problem did. My planning treated setup as free.
+deleted when this surfaced. Later, a native module compiled against Node 22 broke every admin
+route after I upgraded to Node 24 mid-build. Neither problem was interesting, and together
+they cost more of the budget than any correctness issue did. My planning treated setup as
+free, and the Node upgrade was my own unforced error.
 
 **That the agent would be a better reader of documentation than I was.** I wrote the rule
 requiring every external field to be cited to the provider's own documentation in order to
@@ -325,41 +345,42 @@ first ten minutes of implementation.
 cycle, an event updated and correctly not re-alerted, is a case I could not have produced on
 demand. It exists in `notes/` because it happened, not because it was arranged.
 
-## What I would do differently
+### What I would do differently
 
 Write specifications as constraints over a space rather than as lists of examples. Every one
 of my errors was an enumeration that looked complete.
 
-Budget for setup explicitly. The plan's time estimates covered only the work.
+Budget for setup explicitly, and do not change the runtime environment inside a timebox. The
+plan's estimates covered only the work.
 
 Treat the agent's uncertainty section as the highest-value part of its output. Every real
 finding in this log came from something it flagged rather than something it got wrong.
 
-## 5. Scorecard
+---
 
-> To be completed at the end.
+## 5. Scorecard
 
 Outcome is one of **Yes**, **No**, or **Partial**. The third value is the one that carries
 information: a deduplication that existed but keyed on an unstable field is a more useful
 finding than either a clean hit or a clean miss, and forcing it into a binary would throw
 that away.
 
-| # | Prediction | Outcome     | What actually happened |
-|---|---|-------------|---|
-| P1 | Deduplication missing or unstable key | **Partial** | Not the agent's error. Deduplication was implemented as specified, on a key my own design named. The agent then read the source documentation and reported that USGS's `id` is the *current preferred* identifier and may change, so the key I had specified in DL-07 was not stable. Prediction hit the right target for the wrong reason: I expected a generated implementation to get dedup wrong, and instead the specification was wrong and the implementation was faithful to it. Resolved by DL-11. |
-| P2 | Revision handling absent or over-alerting | **No**      | Six transition rows implemented as six distinguishable branches, verified by mutation: breaking one branch turned exactly one test red. A live cycle later observed a real USGS revision that correctly produced a match and no second alert. |
-| P3 | Switch instead of channel registry | **No**      | The dispatcher names no concrete channel. Settled by commit diff rather than by reading: adding the Slack adapter modified **zero existing files**. Four new files, no change to `dispatcher.ts` or `registry.ts`. The definition-of-done claim in `00-plan.md` is met and the git history proves it without anyone taking my word for it. |
-| P4 | Secrets in the database | **No**      | `channel_configs` stores `secretEnvVar`, the name of an environment variable. The only occurrences of "webhook" and "password" in the schema are in comments explaining why the value is absent. |
-| P5 | Retry unbounded or misclassified | **No**      | Bounded at three attempts with backoff, only on `retryable`. Retryability is the adapter's judgement, not the dispatcher's: the Slack adapter classifies 429 and 5xx as retryable and a 404 on a dead webhook as not, and the dispatcher never learns what those codes mean. A delivery attempt row is written before the send, so a crash leaves evidence. |
-| P6 | Definition and normalizer drift | **No**      | The DL-03 guard test holds, verified by mutation: renaming `magnitude` to `magnitudo` in the definition turned it red. Its first form, as I specified it, would have failed on legitimately null fields; corrected before it was written. A second-order version of this risk appeared later and was rejected on the same grounds (see P8). |
-| P7 | Invented payload fields | **No**      | Every USGS field was cited to the ComCat documentation with a URL, and I checked the anchors and definitions myself rather than accepting the citations. All real. The agent went further than instructed: it found `title` present in live payloads but absent from the documented per-feature properties, declined to read it under hard rule 3, and constructed the title from two documented fields instead. |
-| P8 | Nonexistent package or version | **No**      | The opposite happened, twice. The agent found that `prisma@latest` was an RC ahead of `@prisma/client@latest` and pinned both to 7.10.0 rather than pairing an RC CLI with a stable client. Later it stopped and asked before installing a driver adapter, having confirmed the version exists and matches. It then offered a zero-dependency alternative using `node:sqlite` with raw SQL and correctly flagged that as a deviation needing sign-off. I rejected it: raw SQL against a Prisma-managed schema creates two access paths to one database, and the raw path goes stale silently at the first schema change. That is the P6 drift class one layer down. |
-| P9 | Tests asserting on mocks | **No**      | No test mocks its unit under test. Two mutation checks confirmed the suite has teeth. The real failure in this area was mine: `matching.test.ts` initially covered only non-matches, so an implementation returning `false` unconditionally would have passed both tests. Caught by reading the inputs rather than the names. |
-| P10 | Missing attribute throws | **No**      | Missing and wrong-typed attributes both evaluate to non-matches. Covered by tests written before the implementation existed. |
+| # | Prediction | Outcome | What actually happened |
+|---|---|---|---|
+| P1 | Deduplication missing or unstable key | **Partial** | Not the agent's error. Deduplication was implemented as specified, on a key my own design named. The agent then read the source documentation and reported that USGS's `id` is the *current preferred* identifier and may change, so the key I had specified in DL-07 was not stable. The prediction hit the right target for the wrong reason: I expected a generated implementation to get dedup wrong, and instead the specification was wrong and the implementation was faithful to it. Resolved by DL-11. |
+| P2 | Revision handling absent or over-alerting | **No** | Six transition rows implemented as six distinguishable branches, verified by mutation: breaking one branch turned exactly one test red. A live cycle later observed a real USGS revision that correctly produced a match and no second alert. |
+| P3 | Switch instead of channel registry | **No** | The dispatcher names no concrete channel. Settled by commit diff rather than by reading: adding the Slack adapter modified **zero existing files**. Four new files, no change to `dispatcher.ts` or `registry.ts`. The definition-of-done claim in `00-plan.md` is met and the git history proves it without anyone taking my word for it. |
+| P4 | Secrets in the database | **No** | `channel_configs` stores `secretEnvVar`, the name of an environment variable. The only occurrences of "webhook" and "password" in the schema are in comments explaining why the value is absent. |
+| P5 | Retry unbounded or misclassified | **No** | Bounded at three attempts with backoff, only on `retryable`. Retryability is the adapter's judgement, not the dispatcher's: the Slack adapter classifies 429 and 5xx as retryable and a 404 on a dead webhook as not, and the dispatcher never learns what those codes mean. A delivery attempt row is written before the send, so a crash leaves evidence. |
+| P6 | Definition and normalizer drift | **No** | The DL-03 guard test holds, verified by mutation: renaming `magnitude` to `magnitudo` in the definition turned it red. Its first form, as I specified it, would have failed on legitimately null fields; corrected before it was written. A second-order version of this risk appeared later and was rejected on the same grounds (see P8). |
+| P7 | Invented payload fields | **No** | Every USGS field was cited to the ComCat documentation with a URL, and I checked the anchors and definitions myself rather than accepting the citations. All real. The agent went further than instructed: it found `title` present in live payloads but absent from the documented per-feature properties, declined to read it under hard rule 3, and constructed the title from two documented fields instead. |
+| P8 | Nonexistent package or version | **No** | The opposite happened, twice. The agent found that `prisma@latest` was an RC ahead of `@prisma/client@latest` and pinned both to 7.10.0 rather than pairing an RC CLI with a stable client. Later it stopped and asked before installing a driver adapter, having confirmed the version exists and matches. It then offered a zero-dependency alternative using `node:sqlite` with raw SQL and correctly flagged that as a deviation needing sign-off. I rejected it: raw SQL against a Prisma-managed schema creates two access paths to one database, and the raw path goes stale silently at the first schema change. That is the P6 drift class one layer down. |
+| P9 | Tests asserting on mocks | **No** | No test mocks its unit under test. Two mutation checks confirmed the suite has teeth. The real failure in this area was mine: `matching.test.ts` initially covered only non-matches, so an implementation returning `false` unconditionally would have passed both tests. Caught by reading the inputs rather than the names. |
+| P10 | Missing attribute throws | **No** | Missing and wrong-typed attributes both evaluate to non-matches. Covered by tests written before the implementation existed. |
 | P11 | Scope creep into cut features | **Partial** | Nothing from the cut list was built. But `package.json` and `tsconfig.json` were modified without asking, and the test runner question was sidestepped rather than answered: the prompt asked for a proposal and a pause, and the agent arranged for zero new dependencies and moved on. The destination was better than what I would have approved; the route was not. Kept, and recorded as C6. |
-| P12 | Admin view as unscoped CRUD | **Yes**     | Built read-only against the question in DL-08, not as CRUD over every table. |
+| P12 | Admin view as unscoped CRUD | **No** | Built read-only against the question in DL-08, not as CRUD over every table. Verified by grepping for mutation controls: no `onClick`, no `<form>`, no `<button>`, no form actions anywhere under the admin routes. |
 
-## What the scoring says
+### What the scoring says
 
 Ten of twelve predictions did not occur. That is not a flattering result for the prediction
 list, and reading it as one would be the wrong lesson.
@@ -367,10 +388,10 @@ list, and reading it as one would be the wrong lesson.
 Three of the entries above describe errors that were mine rather than the agent's: the
 deduplication key in P1, the guard test that would have failed on correct output in P6, and
 the missing positive cases in P9. In each case the agent implemented my specification
-faithfully and the specification was wrong. The instructions that caught them were written
-to catch invented fields and lazy tests, and what they actually caught was me.
+faithfully and the specification was wrong. The instructions that caught them were written to
+catch invented fields and lazy tests, and what they actually caught was me.
 
-The predictions that did fire, P1 and P11, both fired partially and neither in the shape
-predicted. The value of the list turned out not to be its accuracy but its function: having
-committed to twelve specific things to look for, I looked, and looking is what found the
-things that were not on the list.
+The two that did fire, P1 and P11, both fired partially and neither in the shape predicted.
+The value of the list turned out not to be its accuracy but its function: having committed to
+twelve specific things to look for, I looked, and looking is what found the things that were
+not on the list.
