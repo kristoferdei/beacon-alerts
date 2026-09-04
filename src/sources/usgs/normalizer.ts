@@ -6,6 +6,21 @@ import type { UsgsRawFeature } from "./raw-types.ts";
 // boundary. Neither exists yet at the point of normalization.
 export type NormalizedUsgsEvent = Omit<CanonicalEvent, "id" | "ingestedAt">;
 
+// `ids` is documented as "A comma-separated list of event ids that are
+// associated to an event", with a leading and trailing comma in USGS's own
+// example ("...ci15296281,us2013mqbd,at00mji9pf,..."), which splitting
+// produces as empty leading/trailing segments. `id` is documented as "the
+// current preferred id" and, in a live 328-feature sample, is not always
+// the first entry `ids` lists (it is always present in `ids`, but reordered
+// in 30 of the 328). The preferred id is placed first here regardless, and
+// included even on the hypothetical case where `ids` omits it.
+function parseSourceEventIds(feature: UsgsRawFeature): string[] {
+  const otherIds = feature.properties.ids
+    .split(",")
+    .filter((id) => id.length > 0 && id !== feature.id);
+  return [feature.id, ...otherIds];
+}
+
 export function normalizeUsgsFeature(
   feature: UsgsRawFeature,
 ): NormalizedUsgsEvent {
@@ -28,7 +43,7 @@ export function normalizeUsgsFeature(
 
   return {
     source: "usgs",
-    sourceEventId: feature.id,
+    sourceEventIds: parseSourceEventIds(feature),
     type: properties.type,
     occurredAt: new Date(properties.time).toISOString(),
     revisedAt: new Date(properties.updated).toISOString(),

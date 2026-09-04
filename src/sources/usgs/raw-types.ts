@@ -15,6 +15,7 @@ export type UsgsRawFeature = {
     tsunami: number;
     sig: number;
     magType: string | null;
+    ids: string;
   };
   geometry: {
     type: "Point";

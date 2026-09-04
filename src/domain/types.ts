@@ -11,7 +11,10 @@ export type Location = {
 export type CanonicalEvent = {
   id: string; // ours
   source: string; // 'usgs' | 'mock-news'
-  sourceEventId: string; // theirs, stable, the dedup key
+  // theirs. Identity is this set, not any single entry: DL-11 supersedes the
+  // single stable-id assumption in docs/02-architecture.md sections 2 and 8.
+  // Preferred identifier first.
+  sourceEventIds: string[];
   type: string; // 'earthquake' | 'breaking-news'
   occurredAt: string; // ISO 8601, when it happened
   ingestedAt: string; // when we first saw it

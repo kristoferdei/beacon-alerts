@@ -39,3 +39,21 @@ test("every attribute declared in usgsSourceDefinition appears in at least one n
     );
   }
 });
+
+// DL-11's premise: identity is a set of aliases because USGS's `id` is only
+// the current *preferred* one, and `ids` can carry more than one. If every
+// event in a real 328-feature sample normalized to a single-entry
+// sourceEventIds, that would mean the `ids` field is not actually being
+// read, however plausible the code looks.
+test("at least one normalized event has more than one sourceEventIds entry, over the real fixture", () => {
+  const normalizedEvents = fixture.features.map(normalizeUsgsFeature);
+
+  const hasMultipleAliases = normalizedEvents.some(
+    (event) => event.sourceEventIds.length > 1,
+  );
+
+  assert.ok(
+    hasMultipleAliases,
+    "expected at least one event in the fixture to have more than one sourceEventIds entry",
+  );
+});

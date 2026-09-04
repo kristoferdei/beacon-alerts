@@ -34,6 +34,8 @@ model User {
 model Event {
   id            String    @id @default(cuid())
   source        String
+  // The source's preferred id at ingestion time, kept for display. Not a
+  // dedup key and not unique (DL-11): identity is the EventAlias set below.
   sourceEventId String
   type          String
   occurredAt    DateTime
@@ -54,9 +56,24 @@ model Event {
   attributes Json
 
   ruleMatches RuleMatch[]
+  aliases     EventAlias[]
 
-  @@unique([source, sourceEventId])
   @@map("events")
+}
+
+// Event identity, docs/03-decision-log.md DL-11: supersedes the
+// (source, sourceEventId) unique constraint this table used to carry.
+// Identity is the set of aliases a source has ever reported for an event,
+// not any single field, because a source's "preferred" id can change.
+model EventAlias {
+  id      String @id @default(cuid())
+  source  String
+  alias   String
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id])
+
+  @@unique([source, alias])
+  @@map("event_aliases")
 }
 
 // AlertRule, docs/02-architecture.md section 4.
