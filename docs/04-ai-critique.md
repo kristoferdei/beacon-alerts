@@ -249,17 +249,33 @@ information: a deduplication that existed but keyed on an unstable field is a mo
 finding than either a clean hit or a clean miss, and forcing it into a binary would throw
 that away.
 
-| # | Prediction | Outcome | Action taken |
-|---|---|---|---|
-| P1 | Deduplication missing or unstable key | | |
-| P2 | Revision handling absent or over-alerting | | |
-| P3 | Switch instead of channel registry | | |
-| P4 | Secrets in the database | | |
-| P5 | Retry unbounded or misclassified | | |
-| P6 | Definition and normalizer drift | | |
-| P7 | Invented payload fields | | |
-| P8 | Nonexistent package or version | | |
-| P9 | Tests asserting on mocks | | |
-| P10 | Missing attribute throws | | |
-| P11 | Scope creep into cut features | | |
-| P12 | Admin view as unscoped CRUD | | |
+| # | Prediction | Outcome     | What actually happened |
+|---|---|-------------|---|
+| P1 | Deduplication missing or unstable key | **Partial** | Not the agent's error. Deduplication was implemented as specified, on a key my own design named. The agent then read the source documentation and reported that USGS's `id` is the *current preferred* identifier and may change, so the key I had specified in DL-07 was not stable. Prediction hit the right target for the wrong reason: I expected a generated implementation to get dedup wrong, and instead the specification was wrong and the implementation was faithful to it. Resolved by DL-11. |
+| P2 | Revision handling absent or over-alerting | **No**      | Six transition rows implemented as six distinguishable branches, verified by mutation: breaking one branch turned exactly one test red. A live cycle later observed a real USGS revision that correctly produced a match and no second alert. |
+| P3 | Switch instead of channel registry | **No**      | The dispatcher names no concrete channel. Settled by commit diff rather than by reading: adding the Slack adapter modified **zero existing files**. Four new files, no change to `dispatcher.ts` or `registry.ts`. The definition-of-done claim in `00-plan.md` is met and the git history proves it without anyone taking my word for it. |
+| P4 | Secrets in the database | **No**      | `channel_configs` stores `secretEnvVar`, the name of an environment variable. The only occurrences of "webhook" and "password" in the schema are in comments explaining why the value is absent. |
+| P5 | Retry unbounded or misclassified | **No**      | Bounded at three attempts with backoff, only on `retryable`. Retryability is the adapter's judgement, not the dispatcher's: the Slack adapter classifies 429 and 5xx as retryable and a 404 on a dead webhook as not, and the dispatcher never learns what those codes mean. A delivery attempt row is written before the send, so a crash leaves evidence. |
+| P6 | Definition and normalizer drift | **No**      | The DL-03 guard test holds, verified by mutation: renaming `magnitude` to `magnitudo` in the definition turned it red. Its first form, as I specified it, would have failed on legitimately null fields; corrected before it was written. A second-order version of this risk appeared later and was rejected on the same grounds (see P8). |
+| P7 | Invented payload fields | **No**      | Every USGS field was cited to the ComCat documentation with a URL, and I checked the anchors and definitions myself rather than accepting the citations. All real. The agent went further than instructed: it found `title` present in live payloads but absent from the documented per-feature properties, declined to read it under hard rule 3, and constructed the title from two documented fields instead. |
+| P8 | Nonexistent package or version | **No**      | The opposite happened, twice. The agent found that `prisma@latest` was an RC ahead of `@prisma/client@latest` and pinned both to 7.10.0 rather than pairing an RC CLI with a stable client. Later it stopped and asked before installing a driver adapter, having confirmed the version exists and matches. It then offered a zero-dependency alternative using `node:sqlite` with raw SQL and correctly flagged that as a deviation needing sign-off. I rejected it: raw SQL against a Prisma-managed schema creates two access paths to one database, and the raw path goes stale silently at the first schema change. That is the P6 drift class one layer down. |
+| P9 | Tests asserting on mocks | **No**      | No test mocks its unit under test. Two mutation checks confirmed the suite has teeth. The real failure in this area was mine: `matching.test.ts` initially covered only non-matches, so an implementation returning `false` unconditionally would have passed both tests. Caught by reading the inputs rather than the names. |
+| P10 | Missing attribute throws | **No**      | Missing and wrong-typed attributes both evaluate to non-matches. Covered by tests written before the implementation existed. |
+| P11 | Scope creep into cut features | **Partial** | Nothing from the cut list was built. But `package.json` and `tsconfig.json` were modified without asking, and the test runner question was sidestepped rather than answered: the prompt asked for a proposal and a pause, and the agent arranged for zero new dependencies and moved on. The destination was better than what I would have approved; the route was not. Kept, and recorded as C6. |
+| P12 | Admin view as unscoped CRUD | **Yes**     | Built read-only against the question in DL-08, not as CRUD over every table. |
+
+## What the scoring says
+
+Ten of twelve predictions did not occur. That is not a flattering result for the prediction
+list, and reading it as one would be the wrong lesson.
+
+Three of the entries above describe errors that were mine rather than the agent's: the
+deduplication key in P1, the guard test that would have failed on correct output in P6, and
+the missing positive cases in P9. In each case the agent implemented my specification
+faithfully and the specification was wrong. The instructions that caught them were written
+to catch invented fields and lazy tests, and what they actually caught was me.
+
+The predictions that did fire, P1 and P11, both fired partially and neither in the shape
+predicted. The value of the list turned out not to be its accuracy but its function: having
+committed to twelve specific things to look for, I looked, and looking is what found the
+things that were not on the list.
