@@ -20,3 +20,23 @@ test("a rule whose attribute is present but of the wrong type is a non-match, no
 
   assert.equal(result, false);
 });
+
+test("magnitude 6.1 against >= 6.0 is a match", () => {
+  const result = evaluate("magnitude", ">=", 6.0, { magnitude: 6.1 });
+
+  assert.equal(result, true);
+});
+
+test("magnitude 5.9 against >= 6.0 is not a match", () => {
+  const result = evaluate("magnitude", ">=", 6.0, { magnitude: 5.9 });
+
+  assert.equal(result, false);
+});
+
+test("a string attribute matching via the contains operator is a match", () => {
+  const result = evaluate("magnitudeType", "contains", "w", {
+    magnitudeType: "mww",
+  });
+
+  assert.equal(result, true);
+});
