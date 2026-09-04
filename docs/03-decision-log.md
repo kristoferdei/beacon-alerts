@@ -201,6 +201,10 @@ movement does not survive a one minute poll.
 
 ## DL-07 Deduplication, revision, and when a match is alertable
 
+> **Superseded in part by DL-11.** The transition table below stands and is implemented as
+> written. The deduplication key does not: `(source, sourceEventId)` is not stable in the
+> source I chose. Read DL-11 before relying on this entry.
+
 **Gap.** Not in the brief at all. Forced by using a live source rather than fixtures.
 
 **Context.** A polled feed re-presents the same events every cycle, so the product's defining
@@ -298,80 +302,3 @@ and are listed in the scope boundary rather than discovered later.
 
 **Reversal path.** The dispatcher takes a match rather than a database cursor, so it becomes
 a queue consumer without a signature change. That seam was placed deliberately.
-
-## DL-11 Event identity is a set of aliases, not a single id
-
-**Supersedes the deduplication key in DL-07.** That entry stays as written; this one revises
-it, per the append-only rule at the top of this document.
-
-**Gap.** Not in the brief, and not in my own design either. Found during implementation, when
-the agent read the field definitions and reported a conflict between the source documentation
-and DL-07.
-
-**Context.** DL-07 deduplicates on `(source, sourceEventId)` and treats it as stable. The
-USGS ComCat documentation says otherwise: the event `id` is the *current preferred* id and
-may change over time, and the documentation points explicitly at a separate `ids` field
-holding every id associated with the event.
-
-The failure this produces is precise and silent. An event is first published with a preferred
-id from one contributing network. Later a different network becomes preferred, and the same
-earthquake appears under a new `id`. The unique constraint on `(source, sourceEventId)` does
-not fire, because the key genuinely differs. A second event row is inserted, rule matching
-runs against it with no prior `rule_matches` record, and the user is alerted a second time
-for one earthquake.
-
-This is exactly the class of bug DL-07 exists to prevent. DL-07 prevented it for the case I
-imagined (the same key seen twice) and left it open for the case the source actually
-produces.
-
-**Options.**
-1. Keep the single-id key and accept duplicate alerts on re-association.
-2. Find a more stable single field. `net` plus `code` is the obvious candidate, but `net` is
-   documented as the *preferred* contributor, so it moves for the same reason `id` does.
-   There is no stable single key in this feed.
-3. Treat identity as a set. An event carries one or more aliases; two observations are the
-   same event if their alias sets intersect.
-
-**Decision.** Option 3.
-
-Sources may return more than one identifier for an event. The canonical envelope carries
-`sourceEventIds: string[]`, with the preferred id first. An `event_aliases` table holds one
-row per `(source, alias)`, unique, pointing at the event. On ingest:
-
-1. Parse the source's aliases. For USGS this is the `ids` field split on commas, with the
-   preferred `id` included. For a source with one identifier it is a single-element array,
-   which needs no special case.
-2. Look up existing events by any alias.
-3. No hit: insert the event and all its aliases.
-4. One hit: same event. Apply revision handling per DL-07 and insert any aliases not yet
-   recorded.
-5. More than one hit: two events previously believed distinct have been associated by the
-   source. Keep the earliest-ingested as canonical, record the aliases against it, mark the
-   other as merged, and do not alert. A merge is a correction to our own bookkeeping, not a
-   new event in the world.
-
-**Why.** Option 1 breaks the product's defining behaviour, notifying once when something
-happens, for the same reason missing deduplication would. Option 2 does not exist. Option 3
-costs one table and one lookup per event per poll, and it generalises: alias-carrying is
-declared per source rather than special-cased for USGS, so a future source with stable single
-ids needs no accommodation.
-
-**Cost accepted.** An extra table and an extra query per ingested event. The merge branch in
-step 5 is genuinely hard to test against live data, since it depends on the source
-re-associating events on its own schedule. It gets a unit test over a constructed pair of
-observations rather than a live one, and that limitation is stated rather than hidden.
-
-**Fallback if the timebox bites.** If this does not fit in the remaining budget, the honest
-fallback is option 1 with the risk written into the README and the scope boundary, not a
-half-built alias table. A documented known defect is a better artifact than an untested
-mechanism that appears to handle it.
-
-**How I would know this was wrong.** If merges turn out to be frequent rather than rare, step
-5 stops being a bookkeeping correction and becomes a user-visible event that probably
-deserves its own handling.
-
-**Provenance.** This was found by the implementing agent reading the field documentation, not
-by me, and not by the plan. Recorded here because the process producing that finding is what
-the exercise is about: the instruction to verify every field against the provider's own
-documentation was written to catch invented fields, and it caught a flaw in my design
-instead.

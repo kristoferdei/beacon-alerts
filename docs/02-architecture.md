@@ -3,6 +3,15 @@
 The shape of the system, and the reasoning behind the two boundaries that matter. Decisions
 referenced as DL-nn are recorded in full in `03-decision-log.md`.
 
+> **Superseded in part, and left as written.** Sections 2 and 8 describe event identity as a
+> single `sourceEventId`, with a unique constraint on `(source, sourceEventId)`. During
+> implementation the USGS documentation showed that identifier is not stable: it is the
+> *current preferred* id for an event and changes when the preferred contributing network
+> does. DL-11 replaced it with an alias set and an `event_aliases` table. The original text
+> stays as it was written, because the gap between what I designed before reading the source
+> documentation and what the source actually requires is the most useful thing in this
+> repository, and editing it away would delete the evidence.
+
 ---
 
 ## 1. Shape

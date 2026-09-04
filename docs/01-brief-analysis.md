@@ -111,10 +111,17 @@ is clear that nothing was quietly skipped.
 | Channel flexibility | DL-04 Channel registry with adapter interface |
 | Slack integration style | DL-05 |
 | Detection mechanism and latency | DL-06 |
-| Duplicate and revised events | DL-07 |
+| Duplicate and revised events | DL-07, deduplication key superseded by DL-11 |
 | Admin view purpose | DL-08 |
 | Tenancy and identity | DL-09 |
 | Alert volume | Considered and cut, `00-plan.md` section 6 |
+
+Two later entries in the decision log do not appear above, because they do not resolve a gap
+in the brief. DL-10 records a build decision (a single application on SQLite) that shapes what
+a reviewer has to do to run it. DL-11 was forced during implementation, when the source's own
+documentation contradicted the deduplication key I had specified in DL-07. Neither could have
+been anticipated from reading the brief, which is a useful reminder that this analysis maps
+only the gaps a careful reading can find.
 
 ## 7. What I would tell the PM
 
