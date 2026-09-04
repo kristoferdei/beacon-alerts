@@ -188,6 +188,48 @@ excluded one field from ever being checked.
 it is a fact the persistence layer owns, not the source boundary. No clock injected as a
 parameter, which would have kept the concern in the wrong place with more ceremony.
 
+### C8. A gap in my own test specification, not the agent's tests
+
+**Category.** My error. The agent wrote exactly the cases I listed, and the list was
+incomplete.
+
+**Produced.** Five identity tests covering the alias rules from DL-11, all failing correctly
+with `not implemented`, all named after the behaviour they pin.
+
+**How caught.** Read the inputs rather than the test names. Across all five cases the alias
+sets are either identical (in different order), or one strictly contains the other:
+
+| Test | Stored | Observed | Relationship |
+|---|---|---|---|
+| no shared alias | `["us1"]` | `["ci9"]` | disjoint |
+| differing preferred ids | `["us1","ci1"]` | `["ci1","us1"]` | identical, reordered |
+| superset | `["us1"]` | `["us1","ci1","nc1"]` | observed contains stored |
+| merge | `["us1"]`, `["ci2"]` | `["us1","ci2"]` | observed contains both |
+| single identifier | `["only-id"]` | `["only-id"]` | identical |
+
+No case has the two sets overlapping without one containing the other.
+
+**Why it matters.** An implementation checking subset or set equality rather than
+intersection passes all five and is wrong in production. USGS drops associations as well as
+adding them, so a stored set and an incoming set can share an id while each holds one the
+other does not. That is the exact condition none of the tests reach, and it is the condition
+the whole entry exists to handle.
+
+The second row is a smaller version of the same problem: the test is named for differing
+preferred ids but its two sets are identical, so it pins order-independence, not
+re-association. The name claims more than the assertion delivers.
+
+**Action.** Added a partial-overlap case: stored `["us1","ci1"]` against observed
+`["ci1","nc1"]`, sharing `ci1` with neither containing the other, expected to resolve as one
+event with `nc1` recorded. Renamed the second test to say what it actually pins.
+
+**Reflection.** This is the second specification error of mine that the process caught before
+it reached an implementation, after the guard test that would have failed on legitimately
+null fields. Both came from listing cases rather than characterising the space they are drawn
+from: I enumerated examples, and the enumeration had a hole in the middle. Writing the
+constraint first ("cover disjoint, containing, and partially overlapping") would have made
+the gap visible before the tests existed rather than after.
+
 <!-- Further entries appended during the build. -->
 
 ## 4. Predictions that did not happen, and things I missed

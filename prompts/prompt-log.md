@@ -37,7 +37,7 @@ Prompts used while producing the documents in `docs/`, before any code was gener
 ## Build phase
 
 ### 1. Scaffold and the USGS source
-**When.** [időpont]
+**When.**
 **Model.** Claude Code v2.1.236, Sonnet 5, default effort
 **Intent.** Establish the skeleton and prove the ingestion boundary against a live feed
 before anything depends on it. Scoped narrowly on purpose: a large first diff would make it
@@ -65,7 +65,7 @@ invalidate the deduplication key in DL-07. That became DL-11.
 **Related.** DL-11, C4, C5. Agent's full report in `notes/agent-report-01.md`.
 
 ### 2. Remove the clock from the normalizer
-**When.** [időpont]
+**When.**
 **Intent.** The normalizer stamped `ingestedAt` with `now()`, making it non-deterministic
 over a fixture. Caught by reading the return type before running anything. Asked for the
 field to be removed rather than for a clock to be injected, because `ingestedAt` is a
@@ -79,3 +79,50 @@ with more ceremony.
 
 **What I did with it.** Verified the normalizer now returns
 `Omit
+
+### 3. Failing tests for identity and alertability
+**When.**
+**Intent.** Write the tests before the implementation, because deduplication, revision
+handling and the DL-11 alias logic all fail silently and look fine in a demo. If the code
+comes first, the tests get shaped to fit it, and P1 and P2 are exactly what gets shaped away.
+Full text and checklist in `prompts/drafts/02-failing-tests-ingestion.md`.
+
+**Prompt.**
+> Follow the instructions in prompts/drafts/02-failing-tests-ingestion.md, in the section
+> titled "Prompt". Ignore the section below it, that is my own checklist.
+
+**Outcome.** accepted with edits
+
+**What I did with it.** All 13 new tests fail with `not implemented` thrown from inside the
+stub, not from an import or syntax error, and the one passing test is the pre-existing USGS
+guard. Six transition rows are six separate tests rather than collapsed into alert and
+no-alert. The merge case is present rather than skipped as hard.
+
+Read the test inputs rather than the names, and found that no case covers partial overlap of
+alias sets: every pair is either identical or one contains the other. An implementation using
+subset or equality instead of intersection would pass all of them. Requested one additional
+case and a rename. That gap was mine, not the agent's.
+
+Confirmed the agent's open question about `decideAlertability` taking a precomputed
+`currentlyMatches` rather than calling `evaluate()` itself. That split is what section 5 of
+the architecture document describes, so it stays.
+
+**Related.** C8, DL-07, DL-11. Agent's report in `notes/agent-report-02.md`.
+
+### 4. Cover partial alias overlap
+**When.**
+**Intent.** Close the gap found in entry 3. Kept deliberately narrow: one case and one
+rename, tests only, so the diff is small enough to read completely.
+
+**Prompt.**
+> The identity tests never cover partial overlap. In every case the alias sets are either identical, or one contains the other. An implementation that checks subset or set equality instead of intersection would pass all of them and fail in production, because USGS can drop associations as well as add them, so a stored set and an incoming set can overlap without either containing the other.
+ Add one test: a stored event with aliases ["us1", "ci1"] and an observation with aliases ["ci1", "nc1"]. They share ci1 and neither contains the other. They are the same event, and nc1 is recorded.
+ Also rename the existing "even when their preferred ids differ" test to say what it actually pins: that alias order does not matter. It currently asserts on identical sets in different order.
+ Tests only. Change nothing else.
+
+**Outcome.** accepted
+
+**What I did with it.** Verified the new case uses stored `["us1","ci1"]` against observed
+`["ci1","nc1"]`, which no containment check would satisfy.
+
+**Related.** C8
