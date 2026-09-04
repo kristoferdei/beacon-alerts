@@ -30,24 +30,30 @@ export default async function RulesPage() {
           <thead>
             <tr>
               <th>Name</th>
-              <th>Source</th>
+              <th>Enabled</th>
               <th>Condition</th>
+              <th>Source</th>
               <th>Owner</th>
               <th>Channel</th>
-              <th>Enabled</th>
               <th>Last matched</th>
             </tr>
           </thead>
           <tbody>
             {rules.map((rule) => (
               <tr key={rule.id} id={`rule-${rule.id}`}>
-                <td>{rule.name}</td>
-                <td className="mono">{rule.source}</td>
-                <td className="mono">{formatCondition(rule)}</td>
-                <td>{rule.user.name}</td>
-                <td className="mono">{rule.channelConfig.channelId}</td>
-                <td>{rule.enabled ? "yes" : "no"}</td>
-                <td className="muted">
+                <td className="cell-primary">{rule.name}</td>
+                <td className="cell-primary">{rule.enabled ? "yes" : "no"}</td>
+                <td className="cell-primary">{formatCondition(rule)}</td>
+                <td className="cell-secondary" data-label="Source">
+                  {rule.source}
+                </td>
+                <td className="cell-secondary" data-label="Owner">
+                  {rule.user.name}
+                </td>
+                <td className="cell-secondary" data-label="Channel">
+                  {rule.channelConfig.channelId}
+                </td>
+                <td className="cell-secondary muted" data-label="Last matched">
                   {formatDateTime(lastMatchedByRuleId.get(rule.id) ?? null)}
                 </td>
               </tr>

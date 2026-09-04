@@ -9,10 +9,11 @@
     "start": "next start",
     "lint": "eslint",
     "print-usgs": "node scripts/print-usgs.ts",
+    "postinstall": "prisma generate",
     "db:migrate": "prisma migrate deploy",
     "db:generate": "prisma generate",
     "seed": "node scripts/seed.ts",
-    "setup": "npm run db:migrate && npm run db:generate && npm run seed",
+    "setup": "npm run db:migrate && npm run seed",
     "cycle": "node scripts/run-cycle.ts",
     "test": "node --test"
   },

@@ -24,6 +24,30 @@ export function formatCondition(rule: {
   return `${rule.attribute} ${rule.operator} ${formatConditionValue(rule.value)}`;
 }
 
+export type TagMeta = { variant: string; glyph: string; label: string };
+
+// Colour is reinforcement, never the only carrier: every status/outcome
+// pairs a variant colour with a distinct glyph and its own word.
+export function eventStatusTag(status: string): TagMeta {
+  if (status === "withdrawn") {
+    return { variant: "withdrawn", glyph: "–", label: "withdrawn" };
+  }
+  if (status === "merged") {
+    return { variant: "merged", glyph: "⇄", label: "merged" };
+  }
+  return { variant: "active", glyph: "✓", label: "active" };
+}
+
+export function deliveryOutcomeTag(status: string): TagMeta {
+  if (status === "sent") {
+    return { variant: "active", glyph: "✓", label: "sent" };
+  }
+  if (status === "failed") {
+    return { variant: "failed", glyph: "✕", label: "failed" };
+  }
+  return { variant: "pending", glyph: "●", label: "pending" };
+}
+
 export function formatAttributes(attributes: unknown): string {
   if (
     typeof attributes !== "object" ||

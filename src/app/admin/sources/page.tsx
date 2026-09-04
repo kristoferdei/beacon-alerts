@@ -42,16 +42,18 @@ export default async function SourcesPage() {
           <thead>
             <tr>
               <th>Source</th>
-              <th>Last successful activity</th>
               <th>Events produced</th>
+              <th>Last successful activity</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((row) => (
               <tr key={row.id}>
-                <td>{row.name}</td>
-                <td className="muted">{formatDateTime(row.lastIngestedAt)}</td>
-                <td>{row.eventCount}</td>
+                <td className="cell-primary">{row.name}</td>
+                <td className="cell-primary">{row.eventCount}</td>
+                <td className="cell-secondary muted" data-label="Last successful activity">
+                  {formatDateTime(row.lastIngestedAt)}
+                </td>
               </tr>
             ))}
           </tbody>

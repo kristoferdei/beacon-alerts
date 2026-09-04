@@ -1,0 +1,363 @@
+/* Shared dark console styling: the admin view and the landing page both use
+   `.console`. The admin layout adds `.console--dense` on top for tighter
+   row spacing; the landing page uses the relaxed default, since it is not
+   being scanned mid-incident. */
+
+/* `.console` is an inner wrapper, not html/body itself, so without this the
+   default light background still shows around the edges and below the
+   content on short pages. */
+html,
+body {
+  background: #12151b;
+  min-height: 100%;
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+}
+
+.console {
+  --surface-0: #12151b;
+  --surface-1: #191d25;
+  --surface-2: #222834;
+  --divider: #2b313d;
+
+  --text-primary: #e6e9ef;
+  --text-secondary: #9aa4b5;
+  --text-tertiary: #6b7385;
+
+  --accent: #6ea8fe;
+
+  --status-active-fg: #4ade80;
+  --status-active-bg: #123a1e;
+  --status-failed-fg: #fb7185;
+  --status-failed-bg: #3a1420;
+  --status-pending-fg: #fbbf24;
+  --status-pending-bg: #3a2e10;
+  --status-withdrawn-fg: #9aa4b5;
+  --status-withdrawn-bg: #232834;
+  --status-merged-fg: #c4b5fd;
+  --status-merged-bg: #2a2140;
+
+  --row-padding-y: 0.875rem;
+  --row-padding-x: 0.75rem;
+  --section-gap: 3rem;
+
+  font-family:
+    ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
+  background: var(--surface-0);
+  color: var(--text-primary);
+  min-height: 100dvh;
+  line-height: 1.55;
+}
+
+.console--dense {
+  --row-padding-y: 0.375rem;
+  --row-padding-x: 0.625rem;
+  --section-gap: 2.5rem;
+}
+
+.console-shell {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 1.75rem 1.5rem 4rem;
+}
+
+.console h1 {
+  font-size: 1.1875rem;
+  font-weight: 600;
+  margin: 0 0 0.375rem;
+  color: var(--text-primary);
+}
+
+.console h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 1rem;
+  color: var(--text-primary);
+}
+
+.console p.lede {
+  color: var(--text-secondary);
+  margin: 0 0 1.5rem;
+  max-width: 46rem;
+}
+
+.console a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.console a:hover {
+  text-decoration: underline;
+}
+
+.console a:focus-visible,
+.console button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Navigation, with an active-route indicator */
+
+.console-nav {
+  display: flex;
+  gap: 0.25rem;
+  margin: 0.75rem 0 2rem;
+  padding-bottom: 0;
+  border-bottom: 1px solid var(--divider);
+}
+
+.console-nav a {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  padding: 0.625rem 0.875rem;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.console-nav a:hover {
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.console-nav a[aria-current="page"] {
+  color: var(--text-primary);
+  background: var(--surface-2);
+  border-bottom-color: var(--accent);
+  border-radius: 4px 4px 0 0;
+}
+
+/* Landing page command list */
+
+.console ol.setup-steps {
+  margin: 0 0 1.5rem;
+  padding-left: 1.25rem;
+  color: var(--text-secondary);
+}
+
+.console ol.setup-steps li {
+  margin-bottom: 0.625rem;
+}
+
+.console ol.setup-steps li::marker {
+  color: var(--text-tertiary);
+}
+
+/* Sections and tables */
+
+.console section + section {
+  margin-top: var(--section-gap);
+}
+
+.console table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  background: var(--surface-0);
+}
+
+.console th {
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.6875rem;
+  color: var(--text-secondary);
+  padding: 0.625rem var(--row-padding-x);
+  border-bottom: 1px solid var(--divider);
+  background: var(--surface-1);
+  white-space: nowrap;
+}
+
+.console th:first-child {
+  border-top-left-radius: 6px;
+}
+
+.console th:last-child {
+  border-top-right-radius: 6px;
+}
+
+.console td {
+  padding: var(--row-padding-y) var(--row-padding-x);
+  vertical-align: top;
+  color: var(--text-primary);
+}
+
+.console tr:target {
+  background: var(--surface-2);
+}
+
+.console tr:target td:first-child {
+  box-shadow: inset 4px 0 0 var(--accent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .console tr {
+    transition: background-color 120ms ease;
+  }
+}
+
+.console .muted {
+  color: var(--text-secondary);
+}
+
+/* Monospace is scoped to opaque identifiers only: aliases and raw ids. Not
+   source names, channel names, or the rule condition — those are language,
+   not codes, and stay in the primary face. */
+.console .id {
+  font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+.console code {
+  font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
+  font-size: 0.8125rem;
+  background: var(--surface-1);
+  border: 1px solid var(--divider);
+  border-radius: 4px;
+  padding: 0.125rem 0.375rem;
+  color: var(--text-primary);
+}
+
+.console .empty {
+  color: var(--text-secondary);
+  padding: 1rem 1.125rem;
+  background: var(--surface-1);
+  border: 1px solid var(--divider);
+  border-radius: 6px;
+  max-width: 40rem;
+}
+
+/* Status / outcome tags: colour is reinforcement, not the only carrier —
+   every tag pairs its colour with a glyph and the status word. */
+
+.console .tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.console .tag-glyph {
+  font-size: 0.6875rem;
+}
+
+.console .tag-active {
+  color: var(--status-active-fg);
+  background: var(--status-active-bg);
+}
+
+.console .tag-failed {
+  color: var(--status-failed-fg);
+  background: var(--status-failed-bg);
+}
+
+.console .tag-pending {
+  color: var(--status-pending-fg);
+  background: var(--status-pending-bg);
+}
+
+.console .tag-withdrawn {
+  color: var(--status-withdrawn-fg);
+  background: var(--status-withdrawn-bg);
+}
+
+.console .tag-merged {
+  color: var(--status-merged-fg);
+  background: var(--status-merged-bg);
+}
+
+.console .rule-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.console .rule-list li {
+  margin: 0 0 0.125rem;
+}
+
+.console .aliases {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.console .aliases li {
+  display: inline;
+}
+
+.console .aliases li:not(:last-child)::after {
+  content: ", ";
+  color: var(--text-tertiary);
+}
+
+/* Narrow-width reflow: a designed stacked layout, not horizontal scroll.
+   Each surface marks its scan-critical cells `cell-primary` (stay on one
+   compact line) and the rest `cell-secondary` (wrap beneath, inline
+   labelled via data-label). */
+
+@media (max-width: 640px) {
+  .console table,
+  .console thead,
+  .console tbody,
+  .console tr,
+  .console th,
+  .console td {
+    display: block;
+  }
+
+  .console thead {
+    display: none;
+  }
+
+  .console tr {
+    padding: 0.75rem var(--row-padding-x);
+    border-bottom: 1px solid var(--divider);
+  }
+
+  .console tr:target {
+    box-shadow: inset 4px 0 0 var(--accent);
+  }
+
+  .console tr:target td:first-child {
+    box-shadow: none;
+  }
+
+  .console td {
+    padding: 0;
+    border: none;
+  }
+
+  /* Primary cells flow inline together on one compact scan line; secondary
+     cells drop to their own labelled line beneath. */
+  .console td.cell-primary {
+    display: inline;
+    margin-right: 0.625rem;
+    font-size: 0.9375rem;
+  }
+
+  .console td.cell-secondary {
+    display: block;
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+  }
+
+  .console td.cell-secondary[data-label]::before {
+    content: attr(data-label) ": ";
+    color: var(--text-tertiary);
+  }
+
+  .console td.cell-secondary:empty {
+    display: none;
+  }
+}

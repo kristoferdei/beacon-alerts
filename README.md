@@ -38,16 +38,16 @@ purpose so the predictions in `docs/04-ai-critique.md` could be scored against o
 Requires Node 24 (see `.nvmrc`).
 
 ```bash
-npm install
+npm install                 # also runs `prisma generate` via postinstall
 cp .env.example .env
-npx prisma migrate dev      # creates dev.db from the migrations
-npm run dev                 # http://localhost:3000
+npm run setup                # migrate deploy, then seed (user, channel, two rules)
+npm run dev                  # http://localhost:3000
 ```
 
-At this point the database is empty and the admin view will say so. To populate it:
+At this point the database is seeded but has no events yet, and the admin view will say so.
+To populate it:
 
 ```bash
-npm run seed                # one user, one email channel config, two magnitude rules
 npm run cycle               # fetch the live USGS feed, ingest, match, dispatch
 ```
 

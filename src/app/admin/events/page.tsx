@@ -1,15 +1,9 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma.ts";
-import { formatAttributes, formatDateTime } from "../format.ts";
+import { eventStatusTag, formatAttributes, formatDateTime } from "../format.ts";
+import { Tag } from "../tag.tsx";
 
 export const dynamic = "force-dynamic";
-
-function statusClass(status: string): string {
-  if (status === "active") return "status-active";
-  if (status === "withdrawn") return "status-withdrawn";
-  if (status === "merged") return "status-merged";
-  return "";
-}
 
 export default async function EventsPage() {
   const events = await prisma.event.findMany({
@@ -33,50 +27,57 @@ export default async function EventsPage() {
           <thead>
             <tr>
               <th>Title</th>
-              <th>Source</th>
-              <th>Occurred at</th>
               <th>Status</th>
+              <th>Occurred at</th>
+              <th>Source</th>
               <th>Aliases</th>
               <th>Attributes</th>
               <th>Matched by</th>
             </tr>
           </thead>
           <tbody>
-            {events.map((event) => (
-              <tr key={event.id} id={`event-${event.id}`}>
-                <td>{event.title}</td>
-                <td className="mono">{event.source}</td>
-                <td className="muted">{formatDateTime(event.occurredAt)}</td>
-                <td>
-                  <span className={`tag ${statusClass(event.status)}`}>{event.status}</span>
-                </td>
-                <td>
-                  <ul className="aliases">
-                    {event.aliases.map((alias) => (
-                      <li key={alias.id} className="mono">
-                        {alias.alias}
-                      </li>
-                    ))}
-                  </ul>
-                </td>
-                <td className="mono">{formatAttributes(event.attributes)}</td>
-                <td>
-                  {event.ruleMatches.length === 0 ? (
-                    <span className="muted">none</span>
-                  ) : (
-                    <ul className="rule-list">
-                      {event.ruleMatches.map((ruleMatch) => (
-                        <li key={ruleMatch.id}>
-                          <Link href={`/admin/rules#rule-${ruleMatch.rule.id}`}>
-                            {ruleMatch.rule.name}
-                          </Link>
+            {events.map((event) => {
+              const tag = eventStatusTag(event.status);
+              return (
+                <tr key={event.id} id={`event-${event.id}`}>
+                  <td className="cell-primary">{event.title}</td>
+                  <td className="cell-primary">
+                    <Tag {...tag} />
+                  </td>
+                  <td className="cell-primary muted">{formatDateTime(event.occurredAt)}</td>
+                  <td className="cell-secondary" data-label="Source">
+                    {event.source}
+                  </td>
+                  <td className="cell-secondary" data-label="Aliases">
+                    <ul className="aliases">
+                      {event.aliases.map((alias) => (
+                        <li key={alias.id} className="id">
+                          {alias.alias}
                         </li>
                       ))}
                     </ul>
-                  )}
-                </td>
-              </tr>
-            ))}
+                  </td>
+                  <td className="cell-secondary" data-label="Attributes">
+                    {formatAttributes(event.attributes)}
+                  </td>
+                  <td className="cell-secondary" data-label="Matched by">
+                    {event.ruleMatches.length === 0 ? (
+                      "none"
+                    ) : (
+                      <ul className="rule-list">
+                        {event.ruleMatches.map((ruleMatch) => (
+                          <li key={ruleMatch.id}>
+                            <Link href={`/admin/rules#rule-${ruleMatch.rule.id}`}>
+                              {ruleMatch.rule.name}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       )}
