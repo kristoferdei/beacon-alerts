@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "print-usgs": "node scripts/print-usgs.ts"
+    "print-usgs": "node scripts/print-usgs.ts",
+    "test": "node --test"
   },
   "dependencies": {
     "@prisma/client": "^7.10.0",

@@ -63,3 +63,19 @@ The agent's own uncertainty about USGS event id stability turned out to be corre
 invalidate the deduplication key in DL-07. That became DL-11.
 
 **Related.** DL-11, C4, C5. Agent's full report in `notes/agent-report-01.md`.
+
+### 2. Remove the clock from the normalizer
+**When.** [időpont]
+**Intent.** The normalizer stamped `ingestedAt` with `now()`, making it non-deterministic
+over a fixture. Caught by reading the return type before running anything. Asked for the
+field to be removed rather than for a clock to be injected, because `ingestedAt` is a
+persistence fact and injecting a parameter would have kept the concern in the wrong place
+with more ceremony.
+
+**Prompt.**
+> The normalizer stamps ingestedAt with now(), which makes it non-deterministic: the same fixture produces different output on every run, so any test over it is asserting on the clock. Remove ingestedAt from the normalizer's return type entirely. It should return Omit<CanonicalEvent, 'id' | 'ingestedAt'>. Both id and ingestedAt are facts the persistence layer owns, not the source boundary. Do not inject a clock as a parameter, that keeps the concern in the wrong place. Update the guard test accordingly. Change nothing else.
+
+**Outcome.** accepted
+
+**What I did with it.** Verified the normalizer now returns
+`Omit
