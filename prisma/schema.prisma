@@ -1,0 +1,167 @@
+// Schema only, per docs/02-architecture.md section 8. No ingestion, matching,
+// or delivery logic lives here.
+//
+// SQLite has no native enum type, and Prisma does not emulate enums for the
+// sqlite connector, so fields that are conceptually closed sets in the
+// architecture doc (Event.status, RuleOperator, DeliveryAttempt.status,
+// ChannelConfig.channelId) are modelled as String. That is a Prisma/SQLite
+// constraint, not a design choice.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// Seeded, no registration flow (DL-09). Field list is not specified in
+// docs/02-architecture.md or docs/03-decision-log.md; this is the minimal
+// shape needed for rules and channel configs to reference a user.
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  createdAt DateTime @default(now())
+
+  alertRules     AlertRule[]
+  channelConfigs ChannelConfig[]
+
+  @@map("users")
+}
+
+// Canonical event envelope, docs/02-architecture.md section 2.
+model Event {
+  id            String    @id @default(cuid())
+  source        String
+  sourceEventId String
+  type          String
+  occurredAt    DateTime
+  ingestedAt    DateTime  @default(now())
+  revisedAt     DateTime?
+  status        String
+  title         String
+
+  // Location is a nested object in the canonical type (Location | null).
+  // Flattened to scalar columns, unlike `attributes`, because region
+  // filtering (RegionFilter) needs numeric comparison on lat/lon, which a
+  // JSON blob would not support.
+  locationLat   Float?
+  locationLon   Float?
+  locationLabel String?
+
+  // attributes: Record<string, AttributeValue>. Stored as JSON per section 8.
+  attributes Json
+
+  ruleMatches RuleMatch[]
+
+  @@unique([source, sourceEventId])
+  @@map("events")
+}
+
+// AlertRule, docs/02-architecture.md section 4.
+model AlertRule {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  name      String
+  source    String
+  eventType String?
+  attribute String
+  operator  String
+  // value: number | string | boolean. Stored as JSON to preserve the
+  // original type without a lossy string coercion, the same reasoning
+  // applied to Event.attributes.
+  value     Json
+
+  // RegionFilter | null, flattened for the same reason as Event's location.
+  regionLat      Float?
+  regionLon      Float?
+  regionRadiusKm Float?
+
+  channelConfigId String
+  channelConfig   ChannelConfig @relation(fields: [channelConfigId], references: [id])
+
+  enabled Boolean @default(true)
+
+  ruleMatches RuleMatch[]
+
+  @@map("alert_rules")
+}
+
+// One row per (ruleId, eventId), docs/02-architecture.md section 5 and
+// docs/03-decision-log.md DL-07. No explicit field list is given in either
+// document for this table beyond the transition table's behaviour, so this
+// is inferred from what that behaviour requires: whether the pair currently
+// matches, and when (if ever) it was last alerted.
+model RuleMatch {
+  id      String    @id @default(cuid())
+  ruleId  String
+  rule    AlertRule @relation(fields: [ruleId], references: [id])
+  eventId String
+  event   Event     @relation(fields: [eventId], references: [id])
+
+  matched         Boolean
+  alertedAt       DateTime?
+  lastEvaluatedAt DateTime  @updatedAt
+
+  deliveryAttempts DeliveryAttempt[]
+
+  @@unique([ruleId, eventId])
+  @@map("rule_matches")
+}
+
+// Per-user channel destination plus secret reference (section 8). Never a
+// secret value (hard rule 4, DL-05).
+model ChannelConfig {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  // Registry key the dispatcher resolves against (DL-04), e.g. "email" or
+  // "slack-webhook". Not an enum: new channels register into the map
+  // without a schema change.
+  channelId String
+
+  // Where the notification goes: an email address, a Slack channel name,
+  // etc. Never a webhook URL or credential.
+  destination String
+
+  // Name of the environment variable holding the credential (e.g. a Slack
+  // webhook URL or SMTP password), never the credential itself.
+  secretEnvVar String
+
+  alertRules       AlertRule[]
+  deliveryAttempts DeliveryAttempt[]
+
+  @@map("channel_configs")
+}
+
+// Every send, its outcome, and its attempt number (section 8). Row is
+// created before the network call (section 7).
+model DeliveryAttempt {
+  id String @id @default(cuid())
+
+  ruleMatchId String
+  ruleMatch   RuleMatch @relation(fields: [ruleMatchId], references: [id])
+
+  channelConfigId String
+  channelConfig   ChannelConfig @relation(fields: [channelConfigId], references: [id])
+
+  attemptNumber Int
+
+  // "pending" | "sent" | "failed", per SendResult in section 6 and the
+  // retry description in section 7. Not an enum, see note at top of file.
+  status String
+
+  providerRef String?
+  error       String?
+  // Only meaningful when status is "failed": the adapter's own judgement
+  // (SendResult.retryable) on whether a retry is worthwhile.
+  retryable   Boolean?
+
+  attemptedAt DateTime @default(now())
+
+  @@map("delivery_attempts")
+}

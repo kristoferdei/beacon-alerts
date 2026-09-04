@@ -39,6 +39,10 @@ coverage/
 .eslintcache
 *.tsbuildinfo
 
+# Next.js generated
+next-env.d.ts
+.vercel
+
 # IDE (WebStorm / JetBrains)
 .idea/
 
