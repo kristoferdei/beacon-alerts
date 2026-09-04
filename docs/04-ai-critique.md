@@ -105,6 +105,89 @@ Prisma, which is deliberate and has its own entry (DL-10).
 **Action.** Replaced with a library-agnostic `validateConfig(config): ValidationResult`. If
 the agent proposes a validation library during the build, that becomes a logged decision.
 
+### C4. Guard test verified by mutation, not by reading
+
+**Checked.** Renamed `magnitude` to `magnitudo` in the USGS `EventSourceDefinition` and ran
+the guard test. It failed, as intended. Renamed back, it passed.
+
+**Why this rather than reading it.** A test that passes in both states is worse than no test,
+because it produces confidence without cover. Reading the assertion would not have told me
+whether it reaches the definition at all. Two minutes of mutation did.
+
+**Outcome.** The guard for DL-03 holds. Definition and normalizer cannot drift on a key name
+without the suite going red.
+
+### C5. A build tool rewriting the governance file
+
+**Category.** Not an AI error and not mine. A side effect of a third tool.
+
+**Produced.** During the first sanity-check run, `next dev` appended an agent-instructions
+block to `CLAUDE.md`, a human-authored file this project treats as authoritative and cites as
+evidence of how the agent was constrained.
+
+**How caught.** The agent noticed the modification and reported it under "not done" rather
+than leaving it in place. It reverted the file and set `agentRules: false` in
+`next.config.ts`.
+
+**How I verified it.** I did not take the report at face value, because a plausible fix for a
+real problem is more dangerous than an obvious mistake: if the config key had been invented,
+I would have believed the problem solved while `CLAUDE.md` kept being overwritten. Checked
+the installed package directly rather than the agent's word or my own assumption:
+
+```
+grep -rn "agentRules" node_modules/next/dist/server/config-shared.d.ts
+```
+
+Two hits in the type definitions. The key is real and the fix holds.
+
+**Why it matters.** Everything else in this log is about output from the agent. This is about
+a tool silently editing the file that governs the agent. Had it gone unnoticed, `CLAUDE.md`
+would carry a modification in its git history that I did not author and could not account
+for, in the one file whose credibility depends on being human-authored.
+
+**Standing change.** `git diff --stat CLAUDE.md` after any dev-server run, until the build is
+finished. Verification of tool behaviour now sits alongside verification of AI output.
+
+### C6. `package.json` modified without asking, and a question sidestepped
+
+**Produced.** The agent added `"type": "module"` to `package.json` and
+`allowImportingTsExtensions` to `tsconfig.json` on its own initiative. It also did not answer
+the test runner question: the prompt said to propose one, say why, and wait, and instead it
+arranged for zero new dependencies and moved on.
+
+**How caught.** Read the diff against the request rather than only reading the code.
+
+**Assessment.** The outcome is better than what I asked for: no test runner dependency at all
+is a cleaner result than any proposal I would have approved. The process is not. Hard rule 2
+says `package.json` is not modified without permission, and the prompt asked for a proposal
+and a pause. Both were bypassed, and the fact that the destination was good does not make the
+route acceptable, because next time the same latitude produces something I would not have
+approved.
+
+Kept, because reverting a better answer to make a point would be theatre. Recorded because
+the whole value of the constraint file is that its violations are visible.
+
+**Prediction relevance.** Adjacent to P11 (scope creep) rather than an instance of it: nothing
+from the cut list was built, but work was done outside the request. Scored as Partial, with
+this note.
+
+### C7. Non-deterministic normalizer
+
+**Produced.** The normalizer stamped `ingestedAt` with `now()` inside itself, so the same
+fixture produced different output on every run.
+
+**How caught.** Read the return type before running anything. A field whose value comes from
+the clock has no business in a pure transformation, and any test asserting over that output
+would have been asserting partly on the time of day.
+
+**Why it matters.** Nothing was broken yet, and nothing would have looked broken later
+either. Tests would have been written around it, and the resulting suite would have quietly
+excluded one field from ever being checked.
+
+**Action.** `ingestedAt` removed from the normalizer's return type entirely. Along with `id`,
+it is a fact the persistence layer owns, not the source boundary. No clock injected as a
+parameter, which would have kept the concern in the wrong place with more ceremony.
+
 <!-- Further entries appended during the build. -->
 
 ## 4. Predictions that did not happen, and things I missed
