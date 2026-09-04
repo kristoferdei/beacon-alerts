@@ -1,0 +1,53 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build output
+.next/
+out/
+dist/
+build/
+
+# Environment and secrets
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Local database
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+prisma/dev.db*
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Test and coverage output
+coverage/
+.nyc_output/
+
+# Caches
+.cache/
+.turbo/
+.eslintcache
+*.tsbuildinfo
+
+# IDE (WebStorm / JetBrains)
+.idea/
+
+# IDE (VS Code, kept partially shared)
+.vscode/*
+!.vscode/extensions.json
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
