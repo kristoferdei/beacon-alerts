@@ -1,5 +1,10 @@
 # Prompt Log
 
+**Drafts.** `prompts/drafts/` holds the six prompts I wrote in advance, each with the
+verification checklist I ran against its output. Their numbering does not track the entry
+numbers below, because the drafts cover only the planned steps. Corrections, fixes, and short
+follow-ups were written in the moment and appear here in full.
+
 Every prompt used during the build, in order. Kept live rather than reconstructed
 afterwards, because a reconstructed prompt history is a summary of what I wish I had asked.
 
